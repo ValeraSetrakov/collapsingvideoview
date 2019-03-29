@@ -6,7 +6,6 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.widget.MediaController
 import android.widget.VideoView
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +22,7 @@ class CollapsingVideoView @JvmOverloads constructor(
     }
 
     private val motionVideoViewBehavior: BottomSheetBehavior<MotionVideoView> = BottomSheetBehavior<MotionVideoView>().apply {
-        state = BottomSheetBehavior.STATE_EXPANDED
+//        state = BottomSheetBehavior.STATE_EXPANDED
         isHideable = false
         val videoPeekHeight = context.resources.getDimension(R.dimen.video_peek_height)
         peekHeight = videoPeekHeight.toInt()
@@ -47,15 +46,22 @@ class CollapsingVideoView @JvmOverloads constructor(
     private inner class MotionVideoView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     ) : MotionLayout(context, attrs, defStyleAttr) {
-        private val videoView = View/*VideoView*/(context).apply {
+        private val videoView = VideoView(context).apply {
             id = R.id.video_view
+//            setBackgroundColor(Color.RED)
+            val width = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+            val height = context.resources.getDimension(R.dimen.video_peek_height).toInt()
+            val lp = ConstraintLayout.LayoutParams(width, height)
+            lp.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.dimensionRatio = "w,4:3"
+            layoutParams = lp
             this@MotionVideoView.addView(this)
-            setBackgroundColor(Color.RED)
-//            val uri = Uri.parse("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4")
-//            setVideoURI(uri)
-//            setOnPreparedListener {
-//                start()
-//            }
+            val uri = Uri.parse("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4")
+            setVideoURI(uri)
+            setOnPreparedListener {
+                start()
+            }
         }
 
         init {
