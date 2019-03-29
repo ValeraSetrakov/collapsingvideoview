@@ -1,11 +1,11 @@
 package com.purenative.collapsingvideoview
 
 import android.content.Context
-import android.graphics.Color
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.VideoView
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -40,28 +40,44 @@ class CollapsingVideoView @JvmOverloads constructor(
         lp.behavior = motionVideoViewBehavior
         layoutParams = lp
         this@CollapsingVideoView.addView(this)
-        setBackgroundColor(Color.BLUE)
     }
 
     private inner class MotionVideoView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     ) : MotionLayout(context, attrs, defStyleAttr) {
-        private val videoView = VideoView(context).apply {
-            id = R.id.video_view
-//            setBackgroundColor(Color.RED)
+
+        private val backgroundView = View(context).apply {
+            id = R.id.background
             val width = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
             val height = context.resources.getDimension(R.dimen.video_peek_height).toInt()
             val lp = ConstraintLayout.LayoutParams(width, height)
-            lp.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
             lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
-            lp.dimensionRatio = "w,4:3"
             layoutParams = lp
             this@MotionVideoView.addView(this)
+        }
+
+        private val videoView = VideoView(context).apply {
+            val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+            layoutParams = lp
             val uri = Uri.parse("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4")
             setVideoURI(uri)
             setOnPreparedListener {
                 start()
             }
+        }
+
+        private val videoContainerView = FrameLayout(context).apply {
+            id = R.id.video
+            val width = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+            val height = context.resources.getDimension(R.dimen.video_peek_height).toInt()
+            val lp = ConstraintLayout.LayoutParams(width, height)
+            lp.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+            lp.dimensionRatio = "w,16:9"
+            layoutParams = lp
+            this@MotionVideoView.addView(this)
+            addView(videoView)
         }
 
         init {
