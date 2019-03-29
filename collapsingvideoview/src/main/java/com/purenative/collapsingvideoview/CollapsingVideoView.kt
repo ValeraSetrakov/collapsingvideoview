@@ -23,17 +23,16 @@ class CollapsingVideoView @JvmOverloads constructor(
     }
 
     private val motionVideoViewBehavior: BottomSheetBehavior<MotionVideoView> = BottomSheetBehavior<MotionVideoView>().apply {
+        state = BottomSheetBehavior.STATE_EXPANDED
         isHideable = false
-        peekHeight = 200
+        val videoPeekHeight = context.resources.getDimension(R.dimen.video_peek_height)
+        peekHeight = videoPeekHeight.toInt()
         setBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                log("Slide offset $slideOffset")
                 motionVideoView.progress = slideOffset
             }
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                log("New state $newState")
-            }
+            override fun onStateChanged(bottomSheet: View, newState: Int) {}
         })
     }
 
@@ -48,17 +47,15 @@ class CollapsingVideoView @JvmOverloads constructor(
     private inner class MotionVideoView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     ) : MotionLayout(context, attrs, defStyleAttr) {
-        private val videoView = VideoView(context).apply {
+        private val videoView = View/*VideoView*/(context).apply {
             id = R.id.video_view
-            val lp = ConstraintLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            layoutParams = lp
-            val uri = Uri.parse("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4")
-            setVideoURI(uri)
-//            setMediaController(MediaController(context))
-            setOnPreparedListener {
-                start()
-            }
             this@MotionVideoView.addView(this)
+            setBackgroundColor(Color.RED)
+//            val uri = Uri.parse("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4")
+//            setVideoURI(uri)
+//            setOnPreparedListener {
+//                start()
+//            }
         }
 
         init {
